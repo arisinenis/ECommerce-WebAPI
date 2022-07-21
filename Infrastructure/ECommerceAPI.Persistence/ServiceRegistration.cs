@@ -17,16 +17,16 @@ namespace ECommerceAPI.Persistence
         public static void AddPersistenceService(this IServiceCollection services, IConfiguration config)
         {
             // AddDbContextin ServiceLifetime'ı default olarak scoped'tur. Dependecy inj. yapılan nesne her istediğinde bir tane oluşturur ve onu bize verir. Burada default singleton'a çektik. bir tane oluşturulur ve program çalışırken hep o kullanılır.
-            services.AddDbContext<ECommerceAPIDbContext>(options => options.UseSqlServer(config.GetConnectionString("ECommerceDB")), ServiceLifetime.Singleton);
+            services.AddDbContext<ECommerceAPIDbContext>(options => options.UseSqlServer(config.GetConnectionString("ECommerceDB")));
 
-            services.AddSingleton<ICustomerReadRepository, CustomerReadRepository>();
-            services.AddSingleton<ICustomerWriteRepository, CustomerWriteRepository>();
-            services.AddSingleton<IOrderWriteRepository, OrderWriteRepository>();
-            services.AddSingleton<IOrderReadRepository, OrderReadRepository>();
-            services.AddSingleton<IProductWriteRepository, ProductWriteRepository>();
-            services.AddSingleton<IProductReadRepository, ProductReadRepository>();
-            services.AddSingleton<ICategoryWriteRepository, CategoryWriteRepository>();
-            services.AddSingleton<ICategoryReadRepository, CategoryReadRepository>();
+            services.AddScoped<ICustomerReadRepository, CustomerReadRepository>();
+            services.AddScoped<ICustomerWriteRepository, CustomerWriteRepository>();
+            services.AddScoped<IOrderWriteRepository, OrderWriteRepository>();
+            services.AddScoped<IOrderReadRepository, OrderReadRepository>();
+            services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
+            services.AddScoped<IProductReadRepository, ProductReadRepository>();
+            services.AddScoped<ICategoryWriteRepository, CategoryWriteRepository>();
+            services.AddScoped<ICategoryReadRepository, CategoryReadRepository>();
         }
     }
 }

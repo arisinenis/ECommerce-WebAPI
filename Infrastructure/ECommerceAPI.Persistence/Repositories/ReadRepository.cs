@@ -24,19 +24,57 @@ namespace ECommerceAPI.Persistence.Repositories
         public DbSet<T> Table 
             => _context.Set<T>(); // Bize table'ı döndürüyor.
 
-        public IQueryable<T> GetAll() 
-            => Table;
+        // Sadece okuma işlemi yaptığımız için, yani db'deki verileri çekip listelediğimiz için track edilmesine gerek yok. Bu yüzden optimizasyon işlemi yaptık. Yani track mekanizmasını devre dışı bıraktık.
+
+        public IQueryable<T> GetAll(bool tracking = true)
+        {
+            var query = Table.AsQueryable(); // AsQueryable() metodu ile IQueryable tipine dönüştürdük.
+
+            if (!tracking)
+            {
+                query = query.AsNoTracking(); // query ile gelecek olan dataların ef tarafından track edilmesini kestik.
+            }
+
+            return query;
+        } 
+
 
         //IQueryable sadece verilen şartı sağlayan dataları veritabanından çeker. Tüm dataları çektikten sonra şartı uygulamaz ! Performans açısından önemli
-        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression) 
-            => Table.Where(expression);
-
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression)
-            => await Table.FirstOrDefaultAsync(expression);
-
-        public async Task<T> GetByIdAsync(string id)
+        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression, bool tracking = true)
         {
-            return await Table.FirstOrDefaultAsync(data => data.Id == Guid.Parse(id));
+            var query = Table.Where(expression);
+
+            if (!tracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return query;
+        }
+
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression, bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+
+            if (!tracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.FirstOrDefaultAsync(expression);
+        }
+
+
+        public async Task<T> GetByIdAsync(string id, bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+
+            if (!tracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.FirstOrDefaultAsync(data => data.Id == Guid.Parse(id));
         }
     }
 }
